@@ -1,4 +1,5 @@
 ﻿using TaskManagementSystemApi.DTOs.Project;
+using TaskManagementSystemApi.DTOs.Task;
 
 namespace TaskManagementSystemApi.Services.Interfaces
 {
@@ -27,5 +28,12 @@ namespace TaskManagementSystemApi.Services.Interfaces
         /// <param name="createProjectDto">建立專案 DTO</param>
         /// <returns>建立完成後的專案 DTO</returns>
         ProjectDto CreateProject(CreateProjectDto createProjectDto);
+
+        /// <summary>
+        /// 依照專案 ID 取得該專案底下的所有任務
+        /// </summary>
+        /// <param name="projectId">專案 ID</param>
+        /// <returns>任務 DTO 清單</returns>
+        IEnumerable<TaskDto> GetTasksByProjectId(int projectId);
     }
 }

@@ -2,6 +2,7 @@
 using TaskManagementSystemApi.DTOs.Project;
 using TaskManagementSystemApi.Models;
 using TaskManagementSystemApi.Services.Interfaces;
+using TaskManagementSystemApi.DTOs.Task;
 
 namespace TaskManagementSystemApi.Services
 {
@@ -92,6 +93,31 @@ namespace TaskManagementSystemApi.Services
             };
 
             return projectDto;
+        }
+
+        /// <summary>
+        /// 依照專案 ID 取得該專案底下的所有任務
+        /// </summary>
+        /// <param name="projectId">專案 ID</param>
+        /// <returns>任務 DTO 清單</returns>
+        public IEnumerable<TaskDto> GetTasksByProjectId(int projectId)
+        {
+            var tasks = _dbContext.Tasks
+                .Where(task => task.ProjectId == projectId)
+                .Select(task => new TaskDto
+                {
+                    TaskId = task.TaskId,
+                    ProjectId = task.ProjectId,
+                    TaskTitle = task.TaskTitle,
+                    TaskDescription = task.TaskDescription,
+                    TaskStatus = task.TaskStatus,
+                    AssignedToUserId = task.AssignedToUserId,
+                    CreatedByUserId = task.CreatedByUserId,
+                    DueDate = task.DueDate
+                })
+                .ToList();
+
+            return tasks;
         }
     }
 }

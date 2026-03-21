@@ -77,5 +77,26 @@ namespace TaskManagementSystemApi.Controllers
                 createdProject
             );
         }
+
+        /// <summary>
+        /// 依照專案 ID 取得該專案底下的所有任務
+        /// GET: /api/projects/{id}/tasks
+        /// </summary>
+        /// <param name="id">專案 ID</param>
+        /// <returns>任務清單</returns>
+        [HttpGet("{id}/tasks")]
+        public IActionResult GetTasksByProjectId(int id)
+        {
+            var project = _projectService.GetProjectById(id);
+
+            if (project == null)
+            {
+                return NotFound();
+            }
+
+            var tasks = _projectService.GetTasksByProjectId(id);
+
+            return Ok(tasks);
+        }
     }
 }

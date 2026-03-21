@@ -3,11 +3,20 @@ using TaskManagementSystemApi.Data;
 using TaskManagementSystemApi.Data.Seed;
 using TaskManagementSystemApi.Services;
 using TaskManagementSystemApi.Services.Interfaces;
+using Newtonsoft.Json.Serialization;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
-builder.Services.AddControllers();
+builder.Services.AddControllers()
+    .AddNewtonsoftJson(options =>
+    {
+        // 將 API 輸出的 JSON 欄位名稱轉成 snake_case
+        options.SerializerSettings.ContractResolver = new DefaultContractResolver
+        {
+            NamingStrategy = new SnakeCaseNamingStrategy()
+        };
+    });
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
