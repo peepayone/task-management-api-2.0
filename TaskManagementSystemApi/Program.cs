@@ -18,6 +18,7 @@ builder.Services.AddDbContext<AppDbContext>(options =>
 // 註冊Services
 builder.Services.AddScoped<IUserService, UserService>();
 builder.Services.AddScoped<IProjectService, ProjectService>();
+builder.Services.AddScoped<ITaskService, TaskService>();
 
 var app = builder.Build();
 
