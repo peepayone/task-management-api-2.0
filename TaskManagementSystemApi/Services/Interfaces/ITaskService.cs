@@ -1,4 +1,5 @@
 ﻿using TaskManagementSystemApi.DTOs.Task;
+using TaskManagementSystemApi.Queries;
 
 namespace TaskManagementSystemApi.Services.Interfaces
 {
@@ -9,10 +10,11 @@ namespace TaskManagementSystemApi.Services.Interfaces
     public interface ITaskService
     {
         /// <summary>
-        /// 取得所有任務
+        /// 取得任務清單，並支援篩選與排序
         /// </summary>
+        /// <param name="queryParameters">任務查詢參數</param>
         /// <returns>任務 DTO 清單</returns>
-        IEnumerable<TaskDto> GetAllTasks();
+        IEnumerable<TaskDto> GetAllTasks(TaskQueryParameters queryParamters);
 
         /// <summary>
         /// 依照任務 ID 取得單一任務

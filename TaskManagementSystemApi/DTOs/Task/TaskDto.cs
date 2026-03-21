@@ -16,6 +16,11 @@
         public int ProjectId { get; set; }
 
         /// <summary>
+        /// 專案名稱
+        /// </summary>
+        public string ProjectName { get; set; } = string.Empty;
+
+        /// <summary>
         /// 任務標題
         /// </summary>
         public string TaskTitle { get; set; } = string.Empty;
@@ -34,6 +39,11 @@
         /// 被指派者使用者 ID
         /// </summary>
         public int? AssignedToUserId { get; set; }
+
+        /// <summary>
+        /// 被指派者名稱
+        /// </summary>
+        public string? AssignedToUserName { get; set; }
 
         /// <summary>
         /// 建立者使用者 ID

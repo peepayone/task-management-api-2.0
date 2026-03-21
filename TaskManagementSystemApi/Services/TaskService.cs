@@ -2,6 +2,7 @@
 using TaskManagementSystemApi.DTOs.Task;
 using TaskManagementSystemApi.Models;
 using TaskManagementSystemApi.Services.Interfaces;
+using TaskManagementSystemApi.Queries;
 
 namespace TaskManagementSystemApi.Services
 {
@@ -25,17 +26,70 @@ namespace TaskManagementSystemApi.Services
         /// 取得所有任務
         /// </summary>
         /// <returns>任務 DTO 清單</returns>
-        public IEnumerable<TaskDto> GetAllTasks()
+        public IEnumerable<TaskDto> GetAllTasks(TaskQueryParameters queryParameters)
         {
-            var tasks = _dbContext.Tasks
+            // 先取得可延伸的 IQueryable，後續才能動態組查詢條件
+            var query = _dbContext.Tasks.AsQueryable();
+
+            // 篩選條件
+            // 依照任務狀態篩選
+            if (!string.IsNullOrWhiteSpace(queryParameters.TaskStatus))
+            {
+                query = query.Where(task => task.TaskStatus == queryParameters.TaskStatus);
+            }
+
+            // 依被指派者ID篩選
+            if (queryParameters.AssignedToUserId.HasValue)
+            {
+                query = query.Where(task => task.AssignedToUserId == queryParameters.AssignedToUserId.Value);
+            }
+
+            // 依專案 ID 篩選
+            if (queryParameters.ProjectId.HasValue)
+            {
+                query = query.Where(task => task.ProjectId == queryParameters.ProjectId.Value);
+            }
+
+            // 排序條件
+            var sortBy = queryParameters.SortBy?.ToLower();
+            var sortOrder = queryParameters.SortOrder?.ToLower();
+
+            // 預設排序 TaskId asc
+            switch (sortBy)
+            {
+                case "due_date":
+                    query = sortOrder == "desc"
+                        ? query.OrderByDescending(task => task.DueDate)
+                        : query.OrderBy(task => task.DueDate);
+                    break;
+                case "created_at":
+                    query = sortOrder == "desc"
+                        ? query.OrderByDescending(task => task.CreatedAt)
+                        : query.OrderBy(task => task.CreatedAt);
+                    break;
+                default:
+                    query = query.OrderBy(task => task.TaskId);
+                    break;
+            }
+
+            // make DTO
+            var tasks = query
                 .Select(task => new TaskDto
                 {
                     TaskId = task.TaskId,
+
                     ProjectId = task.ProjectId,
+                    ProjectName = task.Project.ProjectName,
+
                     TaskTitle = task.TaskTitle,
                     TaskDescription = task.TaskDescription,
                     TaskStatus = task.TaskStatus,
+
                     AssignedToUserId = task.AssignedToUserId,
+                    AssignedToUserName = task.AssignedToUser != null
+                        ? task.AssignedToUser.UserName
+                        : null,
+
                     CreatedByUserId = task.CreatedByUserId,
                     DueDate = task.DueDate
                 })
@@ -56,11 +110,19 @@ namespace TaskManagementSystemApi.Services
                 .Select(task => new TaskDto
                 {
                     TaskId = task.TaskId,
+
                     ProjectId = task.ProjectId,
+                    ProjectName = task.Project.ProjectName,
+
                     TaskTitle = task.TaskTitle,
                     TaskDescription = task.TaskDescription,
                     TaskStatus = task.TaskStatus,
+
                     AssignedToUserId = task.AssignedToUserId,
+                    AssignedToUserName = task.AssignedToUser != null
+                        ? task.AssignedToUser.UserName
+                        : null,
+
                     CreatedByUserId = task.CreatedByUserId,
                     DueDate = task.DueDate
                 })

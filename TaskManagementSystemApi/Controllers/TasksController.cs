@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using TaskManagementSystemApi.DTOs.Task;
 using TaskManagementSystemApi.Services.Interfaces;
+using TaskManagementSystemApi.Queries;
 
 namespace TaskManagementSystemApi.Controllers
 {
@@ -23,14 +24,15 @@ namespace TaskManagementSystemApi.Controllers
         }
 
         /// <summary>
-        /// 取得所有任務
+        /// 取得所有任務，並支援篩選與排序
         /// GET: /api/tasks
         /// </summary>
+        /// <param name="queryParameters">任務查詢參數</param>
         /// <returns>任務清單</returns>
         [HttpGet]
-        public IActionResult GetAllTasks()
+        public IActionResult GetAllTasks([FromQuery] TaskQueryParameters queryParameters)
         {
-            var tasks = _taskService.GetAllTasks();
+            var tasks = _taskService.GetAllTasks(queryParameters);
 
             return Ok(tasks);
         }
