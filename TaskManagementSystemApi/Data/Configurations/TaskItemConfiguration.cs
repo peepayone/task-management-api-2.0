@@ -74,7 +74,7 @@ namespace TaskManagementSystemApi.Data.Configurations
             builder.HasOne(task => task.Project)
                    .WithMany(project => project.Tasks)
                    .HasForeignKey(task => task.ProjectId)
-                   .OnDelete(DeleteBehavior.NoAction)
+                   .OnDelete(DeleteBehavior.Cascade)
                    .HasConstraintName("fk_task_project");
 
             // 關聯：Task -> User (CreatedByUser)

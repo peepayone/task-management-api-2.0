@@ -119,5 +119,54 @@ namespace TaskManagementSystemApi.Services
 
             return tasks;
         }
+
+        /// <summary>
+        /// 更新專案
+        /// </summary>
+        /// <param name="projectId">專案 ID</param>
+        /// <param name="updateProjectDto">更新專案 DTO</param>
+        /// <returns>更新成功回傳 true，找不到專案回傳 false</returns>
+        public bool UpdateProject(int projectId, UpdateProjectDto updateProjectDto)
+        {
+            var project = _dbContext.Projects
+                .SingleOrDefault(project => project.ProjectId == projectId);
+
+            if (project == null)
+            {
+                return false;
+            }
+
+            project.ProjectName = updateProjectDto.ProjectName;
+            project.ProjectDescription = updateProjectDto.ProjectDescription;
+            project.UpdatedAt = DateTime.Now;
+
+            _dbContext.SaveChanges();
+
+            return true;
+        }
+
+        /// <summary>
+        /// 刪除專案
+        /// </summary>
+        /// <param name="projectId">專案 ID</param>
+        /// <returns>
+        /// 刪除成功回傳 true；
+        /// 找不到專案或專案底下仍有任務時回傳 false
+        /// </returns>
+        public bool DeleteProject(int projectId)
+        {
+            var project = _dbContext.Projects
+                .SingleOrDefault(project => project.ProjectId == projectId);
+
+            if (project == null)
+            {
+                return false;
+            }
+
+            _dbContext.Projects.Remove(project);
+            _dbContext.SaveChanges();
+
+            return true;
+        }
     }
 }

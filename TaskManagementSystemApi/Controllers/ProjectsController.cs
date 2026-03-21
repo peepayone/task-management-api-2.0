@@ -98,5 +98,49 @@ namespace TaskManagementSystemApi.Controllers
 
             return Ok(tasks);
         }
+
+        /// <summary>
+        /// 更新專案
+        /// PUT: /api/projects/{id}
+        /// </summary>
+        /// <param name="id">專案 ID</param>
+        /// <param name="updateProjectDto">更新專案 DTO</param>
+        /// <returns>更新成功回傳 204，找不到專案回傳 404</returns>
+        [HttpPut("{id}")]
+        public IActionResult UpdateProject(int id, [FromBody] UpdateProjectDto updateProjectDto)
+        {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+
+            var updated = _projectService.UpdateProject(id, updateProjectDto);
+
+            if (!updated)
+            {
+                return NotFound();
+            }
+
+            return NoContent();
+        }
+
+        /// <summary>
+        /// 刪除專案
+        /// DELETE: /api/projects/{id}
+        /// </summary>
+        /// <param name="id">專案 ID</param>
+        /// <returns>刪除成功回傳 204，失敗回傳 404</returns>
+        [HttpDelete("{id}")]
+        public IActionResult DeleteProject(int id)
+        {
+            var deleted = _projectService.DeleteProject(id);
+
+            if (!deleted)
+            {
+                return NotFound();
+            }
+
+            return NoContent();
+        }
     }
 }

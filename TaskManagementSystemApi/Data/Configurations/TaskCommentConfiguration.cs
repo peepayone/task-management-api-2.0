@@ -55,7 +55,7 @@ namespace TaskManagementSystemApi.Data.Configurations
             builder.HasOne(taskComment => taskComment.Task)
                    .WithMany(task => task.TaskComments)
                    .HasForeignKey(taskComment => taskComment.TaskId)
-                   .OnDelete(DeleteBehavior.NoAction)
+                   .OnDelete(DeleteBehavior.Cascade)
                    .HasConstraintName("fk_task_comment_task");
 
             // 關聯：TaskComment -> User
