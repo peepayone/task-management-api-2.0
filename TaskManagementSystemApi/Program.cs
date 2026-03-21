@@ -1,6 +1,8 @@
 using Microsoft.EntityFrameworkCore;
 using TaskManagementSystemApi.Data;
 using TaskManagementSystemApi.Data.Seed;
+using TaskManagementSystemApi.Services;
+using TaskManagementSystemApi.Services.Interfaces;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -12,6 +14,8 @@ builder.Services.AddSwaggerGen();
 // 註冊 AppDbContext，並使用 SQL Server
 builder.Services.AddDbContext<AppDbContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
+
+builder.Services.AddScoped<IUserService, UserService>();
 
 var app = builder.Build();
 
