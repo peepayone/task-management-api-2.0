@@ -21,6 +21,11 @@
         public int UserId { get; set; }
 
         /// <summary>
+        /// 留言者使用者 姓名
+        /// </summary>
+        public string UserName { get; set; } = string.Empty;
+
+        /// <summary>
         /// 留言內容
         /// </summary>
         public string TaskCommentContent { get; set; } = string.Empty;

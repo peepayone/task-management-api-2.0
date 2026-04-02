@@ -1,4 +1,6 @@
-﻿using TaskManagementSystemApi.Data;
+﻿using Microsoft.AspNetCore.Http.HttpResults;
+using Microsoft.EntityFrameworkCore;
+using TaskManagementSystemApi.Data;
 using TaskManagementSystemApi.DTOs.TaskComment;
 using TaskManagementSystemApi.Models;
 using TaskManagementSystemApi.Services.Interfaces;
@@ -35,6 +37,7 @@ namespace TaskManagementSystemApi.Services
                     TaskCommentId = taskComment.TaskCommentId,
                     TaskId = taskComment.TaskId,
                     UserId = taskComment.UserId,
+                    UserName = taskComment.User.UserName,
                     TaskCommentContent = taskComment.TaskCommentContent
                 })
                 .ToList();
@@ -70,12 +73,17 @@ namespace TaskManagementSystemApi.Services
             _dbContext.TaskComments.Add(taskComment);
             _dbContext.SaveChanges();
 
+            var createdComment = _dbContext.TaskComments
+                .Include(tc => tc.User)
+                .First(tc => tc.TaskCommentId == taskComment.TaskCommentId);
+
             var taskCommentDto = new TaskCommentDto
             {
-                TaskCommentId = taskComment.TaskCommentId,
-                TaskId = taskComment.TaskId,
-                UserId = taskComment.UserId,
-                TaskCommentContent = taskComment.TaskCommentContent
+                TaskCommentId = createdComment.TaskCommentId,
+                TaskId = createdComment.TaskId,
+                UserId = createdComment.UserId,
+                UserName = createdComment.User.UserName,
+                TaskCommentContent = createdComment.TaskCommentContent
             };
 
             return taskCommentDto;
