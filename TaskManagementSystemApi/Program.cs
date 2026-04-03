@@ -6,6 +6,10 @@ using TaskManagementSystemApi.Services.Interfaces;
 using Newtonsoft.Json.Serialization;
 
 var builder = WebApplication.CreateBuilder(args);
+// 本機開發環境採user secret 佈署環境採environment variable
+var connectionString =
+    builder.Configuration.GetConnectionString("DefaultConnection")
+    ?? Environment.GetEnvironmentVariable("DB_CONNECTION");
 
 // Add services to the container.
 builder.Services.AddControllers()
@@ -22,7 +26,7 @@ builder.Services.AddSwaggerGen();
 
 // 註冊 AppDbContext，並使用 SQL Server
 builder.Services.AddDbContext<AppDbContext>(options =>
-    options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
+    options.UseSqlServer(builder.Configuration.GetConnectionString(connectionString)));
 
 // 註冊Services
 builder.Services.AddScoped<IUserService, UserService>();
@@ -58,10 +62,15 @@ app.UseCors("AllowFrontend");
 
 app.MapControllers();
 
-using (var scope = app.Services.CreateScope())
+// code first，初次產生範例資料用
+if(app.Environment.IsDevelopment())
 {
-    var dbContext = scope.ServiceProvider.GetRequiredService<AppDbContext>();
-    DbSeeder.Seed(dbContext);
+    using (var scope = app.Services.CreateScope())
+    {
+        var dbContext = scope.ServiceProvider.GetRequiredService<AppDbContext>();
+        DbSeeder.Seed(dbContext);
+    }
+
 }
 
 app.Run();
