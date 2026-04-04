@@ -2,117 +2,237 @@
 
 namespace TaskManagementSystemApi.Data.Seed
 {
-    /// <summary>
-    /// 資料庫初始化資料（Seed Data）
-    /// </summary>
     public static class DbSeeder
     {
-        public static void Seed(AppDbContext context)
+        public static void Seed(AppDbContext dbContext)
         {
-            // 如果已經有資料，就不再新增
-            if (context.Users.Any())
-                return;
+            dbContext.Database.EnsureCreated();
 
             // =========================
-            // Users
+            // 0. 如果已有資料就不重複塞
             // =========================
-            var james = new User
-            {
-                UserName = "James",
-                UserEmail = "james@example.com"
-            };
-
-            var alice = new User
-            {
-                UserName = "Alice",
-                UserEmail = "alice@example.com"
-            };
-
-            var david = new User
-            {
-                UserName = "David",
-                UserEmail = "david@example.com"
-            };
-
-            context.Users.AddRange(james, alice, david);
-            context.SaveChanges();
+            if (dbContext.Users.Any()) return;
 
             // =========================
-            // Projects
+            // 1. Users
             // =========================
-            var energyProject = new Project
+            var users = new List<User>
             {
-                ProjectName = "Energy Management System",
-                ProjectDescription = "Energy system",
-                CreatedByUserId = james.UserId
+                new User { UserName = "James", UserEmail = "james@test.com", CreatedAt = DateTime.Now, UpdatedAt = DateTime.Now },
+                new User { UserName = "Alice", UserEmail = "alice@test.com", CreatedAt = DateTime.Now, UpdatedAt = DateTime.Now },
+                new User { UserName = "Michael", UserEmail = "michael@test.com", CreatedAt = DateTime.Now, UpdatedAt = DateTime.Now },
+                new User { UserName = "David", UserEmail = "david@test.com", CreatedAt = DateTime.Now, UpdatedAt = DateTime.Now }
             };
 
-            var healthProject = new Project
-            {
-                ProjectName = "Health Management System",
-                ProjectDescription = "Health system",
-                CreatedByUserId = alice.UserId
-            };
-
-            context.Projects.AddRange(energyProject, healthProject);
-            context.SaveChanges();
+            dbContext.Users.AddRange(users);
+            dbContext.SaveChanges();
 
             // =========================
-            // Tasks
+            // 2. Projects
             // =========================
-            var task1 = new TaskItem
+            var projects = new List<Project>
             {
-                ProjectId = energyProject.ProjectId,
-                TaskTitle = "Design DB",
-                TaskStatus = "done",
-                CreatedByUserId = james.UserId,
-                AssignedToUserId = james.UserId,
-                DueDate = DateTime.Now.AddDays(-3)
+                new Project
+                {
+                    ProjectName = "Energy Management System",
+                    ProjectDescription = "Monitor energy usage and analytics",
+                    CreatedByUserId = users[0].UserId,
+                    CreatedAt = DateTime.Now,
+                    UpdatedAt = DateTime.Now
+                },
+                new Project
+                {
+                    ProjectName = "Health Management System",
+                    ProjectDescription = "Manage patient records and appointments",
+                    CreatedByUserId = users[1].UserId,
+                    CreatedAt = DateTime.Now,
+                    UpdatedAt = DateTime.Now
+                },
+                new Project
+                {
+                    ProjectName = "Inventory Management System",
+                    ProjectDescription = "Track stock and warehouse operations",
+                    CreatedByUserId = users[2].UserId,
+                    CreatedAt = DateTime.Now,
+                    UpdatedAt = DateTime.Now
+                }
             };
 
-            var task2 = new TaskItem
-            {
-                ProjectId = energyProject.ProjectId,
-                TaskTitle = "Build API",
-                TaskStatus = "doing",
-                TaskDescription = "Develop RESTful APIs for task management, including CRUD operations, filtering, and integration with the database.",
-                CreatedByUserId = james.UserId,
-                AssignedToUserId = david.UserId,
-                DueDate = DateTime.Now.AddDays(2)
-            };
-
-            var task3 = new TaskItem
-            {
-                ProjectId = healthProject.ProjectId,
-                TaskTitle = "User Login",
-                TaskStatus = "todo",
-                TaskDescription = "Allow users to securely log into the system.",
-                CreatedByUserId = alice.UserId,
-                AssignedToUserId = james.UserId
-            };
-
-            context.Tasks.AddRange(task1, task2, task3);
-            context.SaveChanges();
+            dbContext.Projects.AddRange(projects);
+            dbContext.SaveChanges();
 
             // =========================
-            // Comments
+            // 3. Tasks（TaskItem）
             // =========================
-            var comment1 = new TaskComment
+            var tasks = new List<TaskItem>
             {
-                TaskId = task2.TaskId,
-                UserId = james.UserId,
-                TaskCommentContent = "API structure looks good"
+                // ===== Project 1 =====
+                new TaskItem
+                {
+                    ProjectId = projects[0].ProjectId,
+                    TaskTitle = "Design dashboard UI",
+                    TaskDescription = "Initial layout for energy dashboard",
+                    TaskStatus = "todo",
+                    AssignedToUserId = users[0].UserId,
+                    CreatedByUserId = users[0].UserId,
+                    DueDate = DateTime.Today.AddDays(7),
+                    CreatedAt = DateTime.Now,
+                    UpdatedAt = DateTime.Now
+                },
+                new TaskItem
+                {
+                    ProjectId = projects[0].ProjectId,
+                    TaskTitle = "Implement energy API",
+                    TaskDescription = "Provide usage data endpoint",
+                    TaskStatus = "doing",
+                    AssignedToUserId = users[1].UserId,
+                    CreatedByUserId = users[0].UserId,
+                    DueDate = DateTime.Today.AddDays(5),
+                    CreatedAt = DateTime.Now,
+                    UpdatedAt = DateTime.Now
+                },
+                new TaskItem
+                {
+                    ProjectId = projects[0].ProjectId,
+                    TaskTitle = "Export report feature",
+                    TaskDescription = "Allow CSV export",
+                    TaskStatus = "done",
+                    AssignedToUserId = users[2].UserId,
+                    CreatedByUserId = users[1].UserId,
+                    DueDate = DateTime.Today.AddDays(-2),
+                    CreatedAt = DateTime.Now,
+                    UpdatedAt = DateTime.Now
+                },
+
+                // ===== Project 2 =====
+                new TaskItem
+                {
+                    ProjectId = projects[1].ProjectId,
+                    TaskTitle = "Build patient list page",
+                    TaskDescription = "Display patient records",
+                    TaskStatus = "todo",
+                    AssignedToUserId = users[1].UserId,
+                    CreatedByUserId = users[1].UserId,
+                    DueDate = DateTime.Today.AddDays(10),
+                    CreatedAt = DateTime.Now,
+                    UpdatedAt = DateTime.Now
+                },
+                new TaskItem
+                {
+                    ProjectId = projects[1].ProjectId,
+                    TaskTitle = "Integrate appointment module",
+                    TaskDescription = "Connect scheduling API",
+                    TaskStatus = "doing",
+                    AssignedToUserId = users[3].UserId,
+                    CreatedByUserId = users[1].UserId,
+                    DueDate = DateTime.Today.AddDays(6),
+                    CreatedAt = DateTime.Now,
+                    UpdatedAt = DateTime.Now
+                },
+                new TaskItem
+                {
+                    ProjectId = projects[1].ProjectId,
+                    TaskTitle = "Fix validation bug",
+                    TaskDescription = "Resolve form validation issue",
+                    TaskStatus = "done",
+                    AssignedToUserId = users[0].UserId,
+                    CreatedByUserId = users[2].UserId,
+                    DueDate = DateTime.Today.AddDays(-1),
+                    CreatedAt = DateTime.Now,
+                    UpdatedAt = DateTime.Now
+                },
+
+                // ===== Project 3 =====
+                new TaskItem
+                {
+                    ProjectId = projects[2].ProjectId,
+                    TaskTitle = "Stock summary widget",
+                    TaskDescription = "Display inventory summary",
+                    TaskStatus = "todo",
+                    AssignedToUserId = users[2].UserId,
+                    CreatedByUserId = users[2].UserId,
+                    DueDate = DateTime.Today.AddDays(8),
+                    CreatedAt = DateTime.Now,
+                    UpdatedAt = DateTime.Now
+                },
+                new TaskItem
+                {
+                    ProjectId = projects[2].ProjectId,
+                    TaskTitle = "Warehouse transfer API",
+                    TaskDescription = "Implement stock transfer logic",
+                    TaskStatus = "doing",
+                    AssignedToUserId = users[3].UserId,
+                    CreatedByUserId = users[2].UserId,
+                    DueDate = DateTime.Today.AddDays(4),
+                    CreatedAt = DateTime.Now,
+                    UpdatedAt = DateTime.Now
+                },
+                new TaskItem
+                {
+                    ProjectId = projects[2].ProjectId,
+                    TaskTitle = "Order status screen",
+                    TaskDescription = "Finalize UI behavior",
+                    TaskStatus = "done",
+                    AssignedToUserId = users[0].UserId,
+                    CreatedByUserId = users[3].UserId,
+                    DueDate = DateTime.Today.AddDays(-3),
+                    CreatedAt = DateTime.Now,
+                    UpdatedAt = DateTime.Now
+                }
             };
 
-            var comment2 = new TaskComment
+            dbContext.Tasks.AddRange(tasks);
+            dbContext.SaveChanges();
+
+            // =========================
+            // 4. Comments（部分 task 沒 comment）
+            // =========================
+            var comments = new List<TaskComment>
             {
-                TaskId = task2.TaskId,
-                UserId = david.UserId,
-                TaskCommentContent = "Working on it"
+                new TaskComment
+                {
+                    TaskId = tasks[0].TaskId,
+                    UserId = users[0].UserId,
+                    TaskCommentContent = "Initial UI draft completed.",
+                    CreatedAt = DateTime.Now,
+                    UpdatedAt = DateTime.Now
+                },
+                new TaskComment
+                {
+                    TaskId = tasks[1].TaskId,
+                    UserId = users[1].UserId,
+                    TaskCommentContent = "API still under development.",
+                    CreatedAt = DateTime.Now,
+                    UpdatedAt = DateTime.Now
+                },
+                new TaskComment
+                {
+                    TaskId = tasks[1].TaskId,
+                    UserId = users[0].UserId,
+                    TaskCommentContent = "Make sure response uses snake_case.",
+                    CreatedAt = DateTime.Now,
+                    UpdatedAt = DateTime.Now
+                },
+                new TaskComment
+                {
+                    TaskId = tasks[4].TaskId,
+                    UserId = users[3].UserId,
+                    TaskCommentContent = "UI integration in progress.",
+                    CreatedAt = DateTime.Now,
+                    UpdatedAt = DateTime.Now
+                },
+                new TaskComment
+                {
+                    TaskId = tasks[7].TaskId,
+                    UserId = users[3].UserId,
+                    TaskCommentContent = "Transfer logic implemented.",
+                    CreatedAt = DateTime.Now,
+                    UpdatedAt = DateTime.Now
+                }
             };
 
-            context.TaskComments.AddRange(comment1, comment2);
-            context.SaveChanges();
+            dbContext.TaskComments.AddRange(comments);
+            dbContext.SaveChanges();
         }
     }
 }

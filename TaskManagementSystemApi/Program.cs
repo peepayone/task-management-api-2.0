@@ -10,6 +10,10 @@ var builder = WebApplication.CreateBuilder(args);
 var connectionString =
     builder.Configuration.GetConnectionString("DefaultConnection")
     ?? Environment.GetEnvironmentVariable("DB_CONNECTION");
+if (string.IsNullOrEmpty(connectionString))
+{
+    throw new Exception("Connection string is not configured.");
+}
 
 // Add services to the container.
 builder.Services.AddControllers()
@@ -26,7 +30,7 @@ builder.Services.AddSwaggerGen();
 
 // 註冊 AppDbContext，並使用 SQL Server
 builder.Services.AddDbContext<AppDbContext>(options =>
-    options.UseSqlServer(builder.Configuration.GetConnectionString(connectionString)));
+    options.UseSqlServer(connectionString));
 
 // 註冊Services
 builder.Services.AddScoped<IUserService, UserService>();
