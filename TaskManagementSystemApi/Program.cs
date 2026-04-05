@@ -15,6 +15,18 @@ if (string.IsNullOrEmpty(connectionString))
     throw new Exception("Connection string is not configured.");
 }
 
+Console.WriteLine($"DefaultConnection from config is null: {builder.Configuration.GetConnectionString("DefaultConnection") == null}");
+
+var rawDbConnection = Environment.GetEnvironmentVariable("DB_CONNECTION");
+Console.WriteLine($"DB_CONNECTION is null: {rawDbConnection == null}");
+
+if (rawDbConnection != null)
+{
+    Console.WriteLine($"DB_CONNECTION length: {rawDbConnection.Length}");
+    Console.WriteLine($"DB_CONNECTION first 20 chars: [{rawDbConnection.Substring(0, Math.Min(20, rawDbConnection.Length))}]");
+    Console.WriteLine($"DB_CONNECTION first char code: {(int)rawDbConnection[0]}");
+}
+
 // Add services to the container.
 builder.Services.AddControllers()
     .AddNewtonsoftJson(options =>
