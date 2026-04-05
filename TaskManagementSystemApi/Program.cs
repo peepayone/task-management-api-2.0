@@ -7,26 +7,12 @@ using Newtonsoft.Json.Serialization;
 
 var builder = WebApplication.CreateBuilder(args);
 // 本機開發環境採user secret 佈署環境採environment variable
-/*var connectionString =
+var connectionString =
     builder.Configuration.GetConnectionString("DefaultConnection")
     ?? Environment.GetEnvironmentVariable("DB_CONNECTION");
 if (string.IsNullOrEmpty(connectionString))
 {
     throw new Exception("Connection string is not configured.");
-}*/
-// testing
-var connectionString = "Server=tcp:taskdemo-sql-lee.database.windows.net,1433;Initial Catalog=TaskManagementSystemDb;User ID=sqladmin;Password=TaskDemo123!;Encrypt=True;TrustServerCertificate=False;Connection Timeout=30;";
-
-Console.WriteLine($"DefaultConnection from config is null: {builder.Configuration.GetConnectionString("DefaultConnection") == null}");
-
-var rawDbConnection = Environment.GetEnvironmentVariable("DB_CONNECTION");
-Console.WriteLine($"DB_CONNECTION is null: {rawDbConnection == null}");
-
-if (rawDbConnection != null)
-{
-    Console.WriteLine($"DB_CONNECTION length: {rawDbConnection.Length}");
-    Console.WriteLine($"DB_CONNECTION first 20 chars: [{rawDbConnection.Substring(0, Math.Min(20, rawDbConnection.Length))}]");
-    Console.WriteLine($"DB_CONNECTION first char code: {(int)rawDbConnection[0]}");
 }
 
 // Add services to the container.
