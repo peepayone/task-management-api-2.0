@@ -7,16 +7,19 @@ using Newtonsoft.Json.Serialization;
 
 var builder = WebApplication.CreateBuilder(args);
 // 本機開發環境採user secret 佈署環境採environment variable
-var connectionString =
-    builder.Configuration.GetConnectionString("DefaultConnection")
-    ?? Environment.GetEnvironmentVariable("DB_CONNECTION");
-// 清掉前後空白、換行、引號
+var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
+
+if (string.IsNullOrWhiteSpace(connectionString))
+{
+    connectionString = Environment.GetEnvironmentVariable("DB_CONNECTION");
+}
+
 connectionString = connectionString?
     .Trim()
     .Trim('"')
     .Trim('\'');
 
-if (string.IsNullOrEmpty(connectionString))
+if (string.IsNullOrWhiteSpace(connectionString))
 {
     throw new Exception("Connection string is not configured.");
 }
