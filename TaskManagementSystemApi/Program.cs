@@ -10,6 +10,12 @@ var builder = WebApplication.CreateBuilder(args);
 var connectionString =
     builder.Configuration.GetConnectionString("DefaultConnection")
     ?? Environment.GetEnvironmentVariable("DB_CONNECTION");
+// 清掉前後空白、換行、引號
+connectionString = connectionString?
+    .Trim()
+    .Trim('"')
+    .Trim('\'');
+
 if (string.IsNullOrEmpty(connectionString))
 {
     throw new Exception("Connection string is not configured.");
